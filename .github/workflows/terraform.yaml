@@ -13,17 +13,14 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
-      # Checkout repository
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # Setup Terraform
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.7.0
 
-      # Configure AWS credentials
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
         with:
@@ -31,17 +28,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      # Initialize Terraform
       - name: Terraform Init
         working-directory: ./terraform
         run: terraform init
 
-      # Apply Terraform
       - name: Terraform Apply
         working-directory: ./terraform
         run: terraform apply -auto-approve
 
-      # Output EC2 IPs and ECR URL to console
       - name: Terraform Outputs
         id: outputs
         working-directory: ./terraform

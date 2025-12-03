@@ -1,12 +1,13 @@
 name: Multi-Stage CI/CD Pipeline
 
 on:
-  push:
-    branches:
-      - main
+  workflow_run:
+    workflows: ["Terraform Provisioning"]  # Must match the name of your Terraform workflow
+    types:
+      - completed
 
 env:
-  ECR_REPOSITORY: capstone-project/capstone-repo
+  ECR_REPOSITORY: capstone-repo
   AWS_REGION: ap-south-1
   TAG_VALUE: ${{ github.sha }}
 
@@ -37,8 +38,7 @@ jobs:
           aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
 
       - name: Build and Tag Docker Images
-        run: |
-          docker compose -f ./compose.yaml build
+        run: docker compose -f ./compose.yaml build
 
   # -----------------------------
   # Test Stage (multi-stage inside containers)
@@ -56,7 +56,7 @@ jobs:
       - name: Wait for Services to Start
         run: sleep 10
 
-      # Run tests inside each container
+      # Run smoke tests inside each container
       - name: Run Smoke Test - web1
         run: docker exec web1 /capstone_project/smoke-test.sh
 
@@ -66,6 +66,7 @@ jobs:
       - name: Run Smoke Test - nginx
         run: docker exec nginx /capstone_project/smoke-test.sh
 
+      # Run integration tests inside each container
       - name: Run Integration Test - web1
         run: docker exec web1 /capstone_project/integration-test.sh
 
@@ -99,8 +100,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Push All Images to ECR
-        run: |
-          docker compose -f ./compose.yaml push
+        run: docker compose -f ./compose.yaml push
 
   # -----------------------------
   # Deploy Stage
@@ -114,7 +114,7 @@ jobs:
         with:
           host: ${{ secrets.INSTANCE1_IP }},${{ secrets.INSTANCE2_IP }}
           username: ubuntu
-          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          key: ${{ secrets.KEY }}
           script: |
             aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com
             cd /home/ubuntu || mkdir -p /home/ubuntu && cd /home/ubuntu
