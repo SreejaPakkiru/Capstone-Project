@@ -152,6 +152,7 @@ jobs:
             fi
             cd capstone_project
             docker-compose -f ./compose.yaml pull
+            sleep 5
              # Run test container (inside Docker) first
             docker-compose -f ./compose.yaml up --abort-on-container-exit tests
   
