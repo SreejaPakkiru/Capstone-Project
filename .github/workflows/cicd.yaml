@@ -6,7 +6,7 @@ on:
     types:
       - completed
 
-# env:
+env:
 #   ECR_REPOSITORY: capstone-repo
   AWS_REGION: ap-south-1
   TAG_VALUE: ${{ github.sha }}
