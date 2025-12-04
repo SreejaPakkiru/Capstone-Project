@@ -49,6 +49,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
+      
+    # Make test scripts executable (before starting containers)
+      - name: Make test scripts executable
+        run: chmod +x ./tests/*.sh
+
       - name: Start Containers for Testing
         run: docker compose -f ./compose.yaml up -d
 
