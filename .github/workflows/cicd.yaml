@@ -74,26 +74,26 @@ jobs:
       # -------------------------
 
       - name: Smoke Test - web1
-        run: docker exec web1 /test/smoke-test.sh
+        run: docker exec web1 /tests/smoke-test.sh
 
       - name: Smoke Test - web2
-        run: docker exec web2 /test/smoke-test.sh
+        run: docker exec web2 /tests/smoke-test.sh
 
       - name: Smoke Test - nginx
-        run: docker exec nginx /test/smoke-test.sh
+        run: docker exec nginx /tests/smoke-test.sh
 
       # -------------------------
       #    INTEGRATION TESTS
       # -------------------------
 
       - name: Integration Test - web1
-        run: docker exec web1 /test/integration-test.sh
+        run: docker exec web1 /tests/integration-test.sh
 
       - name: Integration Test - web2
-        run: docker exec web2 /test/integration-test.sh
+        run: docker exec web2 /tests/integration-test.sh
 
       - name: Integration Test - nginx
-        run: docker exec nginx /test/integration-test.sh
+        run: docker exec nginx /tests/integration-test.sh
 
       # -------------------------
       #     CLEANUP
