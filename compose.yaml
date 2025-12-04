@@ -37,6 +37,7 @@ services:
       - web1
       - web2
 
+   
   tests:
     build: ./tests
     container_name: test-runner
@@ -44,8 +45,8 @@ services:
       - web1
       - web2
       - nginx
-    networks:
-      - default
+    volumes:
+      - ./tests:/tests   # mount latest test scripts
     entrypoint: ["/tests/run-tests.sh"]
 
 
