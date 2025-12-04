@@ -25,4 +25,10 @@ WORKDIR /usr/src/app
 
 COPY --from=build /usr/src/app /usr/src/app
 
-CMD ["npm", "start"]
+# Copy tests folder
+COPY ./tests /tests
+WORKDIR /tests
+RUN chmod +x ./*.sh
+
+# Run tests first, then start app
+CMD ["sh", "-c", "./smoke-test.sh && ./integration-test.sh && cd /usr/src/app && npm start"]
