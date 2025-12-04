@@ -7,7 +7,6 @@ on:
       - completed
 
 env:
-  ECR_REPOSITORY: capstone-repo
   AWS_REGION: ap-south-1
   TAG_VALUE: ${{ github.sha }}
 
@@ -32,10 +31,10 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Ensure ECR repository exists
-        run: |
-          aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
-          aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
+      # - name: Ensure ECR repository exists
+      #   run: |
+      #     aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
+      #     aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
       - name: Build and Tag Docker Images
         run: docker compose -f ./compose.yaml build
 
