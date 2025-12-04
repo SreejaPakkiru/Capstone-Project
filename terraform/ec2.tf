@@ -35,12 +35,12 @@ resource "aws_instance" "ec2_2" {
               EOF
 }
 
-resource "aws_eip" "eip1" {
-  instance = aws_instance.ec2_1.id
-  tags     = { Name = "capstone-eip-1" }
+resource "aws_eip_association" "attach_existing_eip" {
+  instance_id   = aws_instance.ec2_1.id
+  allocation_id = "eipalloc-048497ecf947f7fda"
 }
 
-resource "aws_eip" "eip2" {
-  instance = aws_instance.ec2_2.id
-  tags     = { Name = "capstone-eip-2" }
+resource "aws_eip_association" "attach_existing_eip_2" {
+  instance_id   = aws_instance.ec2_2.id
+  allocation_id = "eipalloc-05dd6c9d7c04fb28c"
 }
