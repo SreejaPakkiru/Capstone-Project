@@ -11,6 +11,6 @@ resource "aws_ecr_repository" "capstone-repo" {
   }
 
   tags = {
-    Name = "capstone-app"
+    Name = "capstone-repo"
   }
 }
