@@ -145,10 +145,10 @@ jobs:
           username: ubuntu
           key: ${{ secrets.KEY }}
           script: |
-            aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com
+
             cd /home/ubuntu || mkdir -p /home/ubuntu && cd /home/ubuntu
             if [ ! -d "capstone_project" ]; then
-              git clone https://github.com/SreejaPakkiru/Capstone_Project.git capstone_project
+              git clone https://github.com/SreejaPakkiru/Capstone-Project.git capstone_project
             fi
             cd capstone_project
             docker compose -f ./compose.yaml pull
