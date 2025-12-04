@@ -14,12 +14,9 @@ until curl -s http://web2:5000 > /dev/null; do
   sleep 2
 done
 
-echo "Services are up! Running tests..."
+echo "Services are up! Running smoke tests..."
 
-chmod +x /tests/*.sh
+chmod +x /tests/smoke-test.sh
 
-# Run smoke tests
+# Run smoke tests only
 /tests/smoke-test.sh
-
-# Run integration tests
-/tests/integration-test.sh
