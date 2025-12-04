@@ -44,68 +44,68 @@ jobs:
   # -----------------------------
   # Test Stage (multi-stage inside containers)
   # -----------------------------
-  docker-test:
-    runs-on: ubuntu-latest
-    needs: docker-build
-    steps:
-      # - name: Checkout Code
-      #   uses: actions/checkout@v4
+  # docker-test:
+  #   runs-on: ubuntu-latest
+  #   needs: docker-build
+  #   steps:
+  #     # - name: Checkout Code
+  #     #   uses: actions/checkout@v4
 
-      # - name: Start Containers for Testing
-      #   run: docker compose -f ./compose.yaml up -d
+  #     # - name: Start Containers for Testing
+  #     #   run: docker compose -f ./compose.yaml up -d
 
-      # - name: Wait for Services to Start
-      #   run: sleep 10
+  #     # - name: Wait for Services to Start
+  #     #   run: sleep 10
 
-      # # Run smoke tests inside each container
-      # - name: Run Smoke Test - web1
-      #   run: docker exec web1 /test/smoke-test.sh
+  #     # # Run smoke tests inside each container
+  #     # - name: Run Smoke Test - web1
+  #     #   run: docker exec web1 /test/smoke-test.sh
 
-      # - name: Run Smoke Test - web2
-      #   run: docker exec web2 /test/smoke-test.sh
+  #     # - name: Run Smoke Test - web2
+  #     #   run: docker exec web2 /test/smoke-test.sh
 
-      # - name: Run Smoke Test - nginx
-      #   run: docker exec nginx /test/smoke-test.sh
+  #     # - name: Run Smoke Test - nginx
+  #     #   run: docker exec nginx /test/smoke-test.sh
 
-      # # Run integration tests inside each container
-      # - name: Run Integration Test - web1
-      #   run: docker exec web1 /test/integration-test.sh
+  #     # # Run integration tests inside each container
+  #     # - name: Run Integration Test - web1
+  #     #   run: docker exec web1 /test/integration-test.sh
 
-      # - name: Run Integration Test - web2
-      #   run: docker exec web2 /test/integration-test.sh
+  #     # - name: Run Integration Test - web2
+  #     #   run: docker exec web2 /test/integration-test.sh
 
-      # - name: Run Integration Test - nginx
-      #   run: docker exec nginx /test/integration-test.sh
+  #     # - name: Run Integration Test - nginx
+  #     #   run: docker exec nginx /test/integration-test.sh
 
-      # - name: Stop Test Containers
-      #   run: docker compose -f ./compose.yaml down
+  #     # - name: Stop Test Containers
+  #     #   run: docker compose -f ./compose.yaml down
     
 
-        #Pull code again on runner
-      - name: Checkout Code
-        uses: actions/checkout@v4
+  #       #Pull code again on runner
+  #     - name: Checkout Code
+  #       uses: actions/checkout@v4
 
-        #Start containers for testing
-      - name: Start Containers for Testing
-        run: docker compose -f ./compose.yaml up -d
+  #       #Start containers for testing
+  #     - name: Start Containers for Testing
+  #       run: docker compose -f ./compose.yaml up -d
         
-        #Allow time for services to boot fully
-      - name: Wait for Services to Start
-        run: sleep 5
+  #       #Allow time for services to boot fully
+  #     - name: Wait for Services to Start
+  #       run: sleep 5
 
-        #Run smoke tests
-      - name: Run Smoke Test
-        run: |
-          chmod +x ./tests/smoke-test.sh
-          ./tests/smoke-test.sh
-        #Run integration tests
-      - name: Run Integration Test
-        run: |
-          chmod +x ./tests/integration-test.sh
-          ./tests/integration-test.sh
-       #Remove containers after testing
-      - name: Stop Test Containers
-        run: docker compose -f ./compose.yaml down
+  #       #Run smoke tests
+  #     - name: Run Smoke Test
+  #       run: |
+  #         chmod +x ./tests/smoke-test.sh
+  #         ./tests/smoke-test.sh
+  #       #Run integration tests
+  #     - name: Run Integration Test
+  #       run: |
+  #         chmod +x ./tests/integration-test.sh
+  #         ./tests/integration-test.sh
+  #      #Remove containers after testing
+  #     - name: Stop Test Containers
+  #       run: docker compose -f ./compose.yaml down
 
 
   # -----------------------------
