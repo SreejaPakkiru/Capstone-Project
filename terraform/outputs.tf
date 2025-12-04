@@ -9,6 +9,6 @@ output "ec2_public_ips" {
 # }
 
 output "ecr_repository_urls" {
-  value       = aws_ecr_repository.capstone-repo
+  value       = aws_ecr_repository.capstone-repo.repository_url
   description = "ECR repository URLs"
 }
