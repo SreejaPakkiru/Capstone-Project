@@ -1,6 +1,9 @@
 #!/bin/sh
 set -e
 
+echo "Making test scripts executable..."
+chmod +x /tests/*.sh
+
 echo "===== Running Smoke Tests ====="
 ./smoke-test.sh
 
