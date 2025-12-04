@@ -43,6 +43,7 @@ services:
     depends_on:
       - web1
       - web2
+      - nginx
     volumes:
       - ./tests:/tests   # mount your test scripts
     entrypoint: ["/tests/run-tests.sh"]
