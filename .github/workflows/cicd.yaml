@@ -12,11 +12,12 @@ env:
 
 jobs:
 
-  # -----------------------------
-  # Build Docker images
-  # -----------------------------
+  # --------------------------------------------------------
+  # 1) BUILD STAGE
+  # --------------------------------------------------------
   docker-build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -30,59 +31,67 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      # - name: Ensure ECR repository exists
-      #   run: |
-      #     aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
-      #     aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
-      - name: Build and Tag Docker Images
-        run: docker compose -f ./compose.yaml build
+      - name: Build Docker Images
+        working-directory: ${{ github.workspace }}
+        run: docker compose -f compose.yaml build
 
-  # -----------------------------
-  # Test Stage
-  # -----------------------------
-  
+
+  # --------------------------------------------------------
+  # 2) TEST STAGE
+  # --------------------------------------------------------
   docker-test:
     runs-on: ubuntu-latest
     needs: docker-build
 
     steps:
-      # 1️⃣ Checkout repository
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # 2️⃣ Make test scripts executable
+      # Debug repo layout
+      - name: Show Repo Structure
+        run: |
+          echo "PWD:"
+          pwd
+          echo "Workspace:"
+          echo "${{ github.workspace }}"
+          echo "Files:"
+          ls -R ${{ github.workspace }}
+
+      # Ensure tests/sh files are executable
       - name: Make test scripts executable
-        run: chmod +x ./tests/*.sh
+        run: chmod +x ${{ github.workspace }}/tests/*.sh
 
-      # 3️⃣ Start containers from repo root
+      # Force docker compose to run in repo directory
       - name: Start Test Containers
-        run: docker compose -f ./compose.yaml up -d
+        working-directory: ${{ github.workspace }}
+        run: docker compose -f compose.yaml up -d
 
-      # 4️⃣ Wait for services to be ready
-      - name: Wait for Services
+      # Debug inside containers
+      - name: Debug /tests folder in containers
+        working-directory: ${{ github.workspace }}
         run: |
-          echo "Waiting for services to start..."
+          docker exec web1 ls -l /tests || true
+          docker exec web2 ls -l /tests || true
+          docker exec nginx ls -l /tests || true
+
+      # Wait for services
+      - name: Wait for services
+        working-directory: ${{ github.workspace }}
+        run: |
+          echo "Waiting for services..."
           for i in {1..30}; do
-            if docker exec web1 curl -s http://localhost:5000 > /dev/null && \
-               docker exec web2 curl -s http://localhost:5000 > /dev/null && \
-               docker exec nginx curl -s http://localhost > /dev/null; then
-              echo "All services are ready!"
-              break
+            if docker exec web1 curl -s http://localhost:5000 >/dev/null 2>&1 && \
+               docker exec web2 curl -s http://localhost:5000 >/dev/null 2>&1 && \
+               docker exec nginx curl -s http://localhost >/dev/null 2>&1; then
+              echo "Services are live!"
+              exit 0
             fi
-            sleep 2
+            echo "Waiting..."
+            sleep 3
           done
-          docker ps -a
+          echo "Services failed to start"
+          exit 1
 
-      # 5️⃣ Debug container contents (optional)
-      - name: Debug /tests folder
-        run: |
-          docker exec web1 ls -l /tests
-          docker exec web2 ls -l /tests
-          docker exec nginx ls -l /tests
-
-      # -------------------------
-      # 6️⃣ SMOKE TESTS
-      # -------------------------
+      # Smoke Tests
       - name: Smoke Test - web1
         run: docker exec web1 bash /tests/smoke-test.sh
 
@@ -92,9 +101,7 @@ jobs:
       - name: Smoke Test - nginx
         run: docker exec nginx bash /tests/smoke-test.sh
 
-      # -------------------------
-      # 7️⃣ INTEGRATION TESTS
-      # -------------------------
+      # Integration Tests
       - name: Integration Test - web1
         run: docker exec web1 bash /tests/integration-test.sh
 
@@ -104,20 +111,20 @@ jobs:
       - name: Integration Test - nginx
         run: docker exec nginx bash /tests/integration-test.sh
 
-      # -------------------------
-      # 8️⃣ CLEANUP
-      # -------------------------
+      # Cleanup
       - name: Stop Containers
         if: always()
-        run: docker compose -f ./compose.yaml down
+        working-directory: ${{ github.workspace }}
+        run: docker compose -f compose.yaml down
 
 
-  # -----------------------------
-  # Push Docker Images to ECR
-  # -----------------------------
+  # --------------------------------------------------------
+  # 3) PUSH IMAGES TO ECR
+  # --------------------------------------------------------
   docker-push:
     runs-on: ubuntu-latest
     needs: docker-test
+
     steps:
       - uses: actions/checkout@v4
 
@@ -131,15 +138,18 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push Docker Images
-        run: docker compose -f ./compose.yaml push
+      - name: Push Images
+        working-directory: ${{ github.workspace }}
+        run: docker compose -f compose.yaml push
 
-  # -----------------------------
-  # Deploy Stage
-  # -----------------------------
+
+  # --------------------------------------------------------
+  # 4) DEPLOY TO EC2
+  # --------------------------------------------------------
   docker-deploy:
     runs-on: ubuntu-latest
     needs: docker-push
+
     steps:
       - name: Execute remote SSH commands
         uses: appleboy/ssh-action@v1
@@ -154,5 +164,5 @@ jobs:
               git clone https://github.com/SreejaPakkiru/Capstone_Project.git capstone_project
             fi
             cd capstone_project
-            docker compose -f ./compose.yaml pull
-            docker compose -f ./compose.yaml up -d --remove-orphans
+            docker compose -f compose.yaml pull
+            docker compose -f compose.yaml up -d --remove-orphans
