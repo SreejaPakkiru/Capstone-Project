@@ -7,7 +7,7 @@ on:
       - completed
 
 env:
-  ECR_REPOSITORY: capstone-repo
+  ECR_REPOSITORY: capstone-app
   AWS_REGION: ap-south-1
   TAG_VALUE: ${{ github.sha }}
 
@@ -58,23 +58,23 @@ jobs:
 
       # Run smoke tests inside each container
       - name: Run Smoke Test - web1
-        run: docker exec web1 /test/smoke-test.sh
+        run: docker exec web1 /tests/smoke-test.sh
 
       - name: Run Smoke Test - web2
-        run: docker exec web2 /test/smoke-test.sh
+        run: docker exec web2 /tests/smoke-test.sh
 
       - name: Run Smoke Test - nginx
-        run: docker exec nginx /test/smoke-test.sh
+        run: docker exec nginx /tests/smoke-test.sh
 
       # Run integration tests inside each container
       - name: Run Integration Test - web1
-        run: docker exec web1 /test/integration-test.sh
+        run: docker exec web1 /tests/integration-test.sh
 
       - name: Run Integration Test - web2
-        run: docker exec web2 /test/integration-test.sh
+        run: docker exec web2 /tests/integration-test.sh
 
       - name: Run Integration Test - nginx
-        run: docker exec nginx /test/integration-test.sh
+        run: docker exec nginx /tests/integration-test.sh
 
       - name: Stop Test Containers
         run: docker compose -f ./compose.yaml down
