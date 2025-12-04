@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "capstone-repo" {
-  name                 = "capstone-app"
+  name                 = "capstone-repo"
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {

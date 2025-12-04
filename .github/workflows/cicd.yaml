@@ -7,7 +7,7 @@ on:
       - completed
 
 env:
-  ECR_REPOSITORY: capstone-app
+  ECR_REPOSITORY: capstone-repo
   AWS_REGION: ap-south-1
   TAG_VALUE: ${{ github.sha }}
 
@@ -46,62 +46,62 @@ jobs:
   docker-test:
     runs-on: ubuntu-latest
     needs: docker-build
+
     steps:
+      # Checkout repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Start Containers for Testing
+      # Start containers
+      - name: Start Test Containers
         run: docker compose -f ./compose.yaml up -d
 
-      - name: Wait for Services to Start
-        run: sleep 10
+      # Show running containers
+      - name: Wait for Services + Show Status
+        run: |
+          sleep 10
+          docker ps -a
 
-      # Run smoke tests inside each container
-      - name: Run Smoke Test - web1
-        run: docker exec web1 /tests/smoke-test.sh
+      # Debug logs before tests (optional but helpful)
+      - name: Print container logs (debug)
+        run: |
+          docker logs web1 || true
+          docker logs web2 || true
+          docker logs nginx || true
 
-      - name: Run Smoke Test - web2
-        run: docker exec web2 /tests/smoke-test.sh
+      # -------------------------
+      #        SMOKE TESTS
+      # -------------------------
 
-      - name: Run Smoke Test - nginx
-        run: docker exec nginx /tests/smoke-test.sh
+      - name: Smoke Test - web1
+        run: docker exec web1 /test/smoke-test.sh
 
-      # Run integration tests inside each container
-      - name: Run Integration Test - web1
-        run: docker exec web1 /tests/integration-test.sh
+      - name: Smoke Test - web2
+        run: docker exec web2 /test/smoke-test.sh
 
-      - name: Run Integration Test - web2
-        run: docker exec web2 /tests/integration-test.sh
+      - name: Smoke Test - nginx
+        run: docker exec nginx /test/smoke-test.sh
 
-      - name: Run Integration Test - nginx
-        run: docker exec nginx /tests/integration-test.sh
+      # -------------------------
+      #    INTEGRATION TESTS
+      # -------------------------
 
-      - name: Stop Test Containers
+      - name: Integration Test - web1
+        run: docker exec web1 /test/integration-test.sh
+
+      - name: Integration Test - web2
+        run: docker exec web2 /test/integration-test.sh
+
+      - name: Integration Test - nginx
+        run: docker exec nginx /test/integration-test.sh
+
+      # -------------------------
+      #     CLEANUP
+      # -------------------------
+
+      - name: Stop Containers
+        if: always()
         run: docker compose -f ./compose.yaml down
-
-  # -----------------------------
-  # Push to ECR if tests pass
-  # -----------------------------
-  docker-push:
-    runs-on: ubuntu-latest
-    needs: docker-test
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v5
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Push All Images to ECR
-        run: docker compose -f ./compose.yaml push
-
   # -----------------------------
   # Deploy Stage
   # -----------------------------

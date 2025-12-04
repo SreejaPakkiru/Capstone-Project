@@ -36,10 +36,23 @@ jobs:
         working-directory: ./terraform
         run: terraform apply -auto-approve
 
-      - name: Terraform Outputs
-        id: outputs
+      - name: Show Terraform Outputs
+        id: show_outputs
         working-directory: ./terraform
         run: |
-          echo "EC2_PUBLIC_IPS=$(terraform output -json ec2_public_ips | jq -r '.[]' | paste -sd, -)"
-          echo "ECR_REPOSITORY_URL=$(terraform output -raw ecr_repository_urls.repository_url)"
-          echo "NOTE: Copy these values manually into GitHub Secrets for the CI/CD workflow"
+          echo "Fetching Terraform outputs..."
+
+          # Get all EC2 public IPs and convert list → comma-separated string
+          EC2_PUBLIC_IPS=$(terraform output -json ec2_public_ips | jq -r '.[]' | paste -sd "," -)
+          echo "EC2 Public IPs: $EC2_PUBLIC_IPS"
+
+          # Get ECR repository URL (raw string)
+          ECR_URL=$(terraform output -raw ecr_repository_urls_repository_url)
+          echo "ECR Repository URL: $ECR_URL"
+
+          echo ""
+          echo "==============================="
+          echo " Copy these values into GitHub Secrets "
+          echo "==============================="
+          echo "EC2_PUBLIC_IPS=$EC2_PUBLIC_IPS"
+          echo "ECR_REPOSITORY_URL=$ECR_URL"
