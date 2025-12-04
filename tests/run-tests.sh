@@ -2,8 +2,8 @@
 set -e
 
 echo "Making test scripts executable..."
-chmod +x /tests/*.sh
-
+chmod 777 ./smoke-test.sh
+chmod 777 ./integration-test.sh
 echo "===== Running Smoke Tests ====="
 ./smoke-test.sh
 
