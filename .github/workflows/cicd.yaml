@@ -46,7 +46,7 @@ jobs:
      runs-on: ubuntu-latest
      needs: docker-build   # Make sure images are built first if you have a separate build job
 
-    steps:
+     steps:
       # 1️⃣ Checkout repo
       - name: Checkout Code
         uses: actions/checkout@v4
