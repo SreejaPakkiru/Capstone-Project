@@ -1,3 +1,5 @@
+version: '3.9'
+
 services:
 
   redis:
@@ -14,8 +16,6 @@ services:
     hostname: web1
     ports:
       - '81:5000'
-    volumes:
-      - ./tests:/tests   # <-- Mount tests folder
 
   web2:
     build: ./web
@@ -25,8 +25,6 @@ services:
     hostname: web2
     ports:
       - '82:5000'
-    volumes:
-      - ./tests:/tests   # <-- Mount tests folder
 
   nginx:
     build: ./nginx
@@ -37,5 +35,14 @@ services:
     depends_on:
       - web1
       - web2
+
+  tests:
+    build: ./tests
+    container_name: tests
+    depends_on:
+      - web1
+      - web2
+      - nginx
     volumes:
-      - ./tests:/tests   # <-- Mount tests folder
+      - ./tests:/tests
+    entrypoint: ["./smoke-test.sh"] # Default entrypoint for smoke tests

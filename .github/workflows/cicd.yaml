@@ -2,7 +2,7 @@ name: Multi-Stage CI/CD Pipeline
 
 on:
   workflow_run:
-    workflows: ["Terraform Provisioning"]  # Must match the name of your Terraform workflow
+    workflows: ["Terraform Provisioning"]
     types:
       - completed
 
@@ -18,8 +18,7 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -39,7 +38,7 @@ jobs:
         run: docker compose -f ./compose.yaml build
 
   # -----------------------------
-  # Test Stage (multi-stage inside containers)
+  # Test Stage
   # -----------------------------
   
   docker-test:
@@ -114,14 +113,13 @@ jobs:
 
 
   # -----------------------------
-  # Push to ECR if tests pass
+  # Push Docker Images to ECR
   # -----------------------------
   docker-push:
     runs-on: ubuntu-latest
     needs: docker-test
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v5
@@ -133,7 +131,7 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Push All Images to ECR
+      - name: Push Docker Images
         run: docker compose -f ./compose.yaml push
 
   # -----------------------------
