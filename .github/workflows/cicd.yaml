@@ -151,5 +151,5 @@ jobs:
               git clone https://github.com/SreejaPakkiru/Capstone-Project.git capstone_project
             fi
             cd capstone_project
-            /usr/bin/docker compose -f ./compose.yaml pull
-            /usr/bin/docker compose -f ./compose.yaml up -d --remove-orphans
+            docker-compose -f ./compose.yaml pull
+            docker-compose -f ./compose.yaml up -d --remove-orphans
