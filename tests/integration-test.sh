@@ -1,7 +1,23 @@
 #!/bin/bash
-# Integration test example
+#integration test via Nginx + Redis
 
-echo "Running integration tests inside $(hostname)..."
+#Getting initial response from Nginx
+initial=$(curl -s http://localhost/)
 
-# Example: Check if web app can connect to Redis
-curl -s http://localhost:5000/test-redis | grep "Connected" && echo "Integration test passed" || exit 1
+#Make another request to increment counter
+curl -s http://localhost/ > /dev/null
+
+#Get updated response
+updated=$(curl -s http://localhost/)
+
+#Simple validation: check if updated response is different from initial
+if [ "$initial" != "$updated" ]; then
+    echo "Integration test passed"
+    echo "Initial response: $initial"
+    echo "Updated response: $updated"
+else
+    echo "Integration test failed"
+    echo "Initial response: $initial"
+    echo "Updated response: $updated"
+    exit 1
+fi

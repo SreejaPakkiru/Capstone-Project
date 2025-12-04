@@ -15,7 +15,7 @@ services:
     ports:
       - '81:5000'
     volumes:
-      - ./tests:/test   # <-- Mount tests folder
+      - ./tests:/tests   # <-- Mount tests folder
 
   web2:
     build: ./web
@@ -26,7 +26,7 @@ services:
     ports:
       - '82:5000'
     volumes:
-      - ./tests:/test   # <-- Mount tests folder
+      - ./tests:/tests   # <-- Mount tests folder
 
   nginx:
     build: ./nginx
@@ -38,4 +38,4 @@ services:
       - web1
       - web2
     volumes:
-      - ./tests:/test   # <-- Mount tests folder
+      - ./tests:/tests   # <-- Mount tests folder
