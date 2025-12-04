@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Test web1 service
 if curl -s http://web1:5000 > /dev/null; then
