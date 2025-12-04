@@ -151,6 +151,8 @@ jobs:
               git clone https://github.com/SreejaPakkiru/Capstone-Project.git capstone_project
             fi
             cd capstone_project
+            chmod -R 777 ./tests
+
             docker-compose -f ./compose.yaml pull
             sleep 5
              # Run test container (inside Docker) first
