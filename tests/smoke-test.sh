@@ -1,7 +1,17 @@
 #!/bin/bash
-# Quick sanity check for container
 
-echo "Running smoke test inside $(hostname)..."
+#Test web1 service on port 81
+if curl -s http://localhost:81 > /dev/null; then
+  echo "web1 is up"
+else
+  echo "web1 is down"
+  exit 1
+fi
 
-# Example: Check if service responds
-curl -s http://localhost:5000/health | grep "OK" && echo "Smoke test passed" || exit 1
+#Test web2 service on port 82
+if curl -s http://localhost:82 > /dev/null; then
+  echo "web2 is up"
+else
+  echo "web2 is down"
+  exit 1
+fi
