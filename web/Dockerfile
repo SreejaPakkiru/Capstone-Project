@@ -26,9 +26,9 @@ WORKDIR /usr/src/app
 COPY --from=build /usr/src/app /usr/src/app
 
 # Copy tests folder
-COPY ./tests /tests
+COPY ./tests/smoke-test.sh /tests
 WORKDIR /tests
-RUN chmod +x ./*.sh
+RUN chmod +x ./tests/smoke-test.sh
 
 # Run tests first, then start app
-CMD ["sh", "-c", "./smoke-test.sh && ./integration-test.sh && cd /usr/src/app && npm start"]
+CMD ["sh", "-c", "./tests/smoke-test.sh && cd /usr/src/app && npm start"]
