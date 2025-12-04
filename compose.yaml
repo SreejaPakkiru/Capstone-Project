@@ -37,7 +37,7 @@ services:
       - web2
 
     tests:
-    image: your-image:latest
+    image: 954692414134.dkr.ecr.ap-south-1.amazonaws.com/capstone-repo:web1-${TAG_VALUE}
     container_name: test-runner
     depends_on:
       - web1
