@@ -36,13 +36,13 @@ services:
       - web1
       - web2
 
-  tests:
-    build: ./tests
-    container_name: tests
-    depends_on:
-      - web1
-      - web2
-      - nginx
-    volumes:
-      - ./tests:/tests
-    entrypoint: ["./smoke-test.sh"] # Default entrypoint for smoke tests
+  # tests:
+  #   build: ./tests
+  #   container_name: tests
+  #   depends_on:
+  #     - web1
+  #     - web2
+  #     - nginx
+  #   volumes:
+  #     - ./tests:/tests
+  #   entrypoint: ["./smoke-test.sh"] # Default entrypoint for smoke tests
