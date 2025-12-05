@@ -8,7 +8,6 @@ services:
     ports:
       - '6379:6379'
     
-
   web1:
     build: ./web
     image: 954692414134.dkr.ecr.ap-south-1.amazonaws.com/capstone-repo:web1-${TAG_VALUE}
@@ -37,27 +36,14 @@ services:
       - web1
       - web2
 
-   
   tests:
     build: ./tests
-    image: capstone-tests:latest   # important fix
+    image: capstone-tests:latest #test container is not pushed into ECR
     container_name: test-runner
     depends_on:
       - web1
       - web2
       - nginx
     volumes:
-      - ./tests:/tests           # always use latest scripts
+      - ./tests:/tests        
     entrypoint: ["/tests/run-tests.sh"]
-
-
-  # tests:
-  #   build: ./tests
-  #   container_name: tests
-  #   depends_on:
-  #     - web1
-  #     - web2
-  #     - nginx
-  #   volumes:
-  #     - ./tests:/tests
-  #   entrypoint: ["./smoke-test.sh"] # Default entrypoint for smoke tests
