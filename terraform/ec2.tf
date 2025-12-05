@@ -38,17 +38,16 @@ resource "aws_instance" "ec2_2" {
               EOF
 }
 
-# Attach **existing** EIPs (no new EIP creation)
 resource "aws_eip_association" "attach_existing_eip_1" {
   instance_id   = aws_instance.ec2_1.id
-  allocation_id = "eipalloc-048497ecf947f7fda" # existing EIP ID
+  allocation_id = "eipalloc-048497ecf947f7fda" 
 
   depends_on = [aws_instance.ec2_1]
 }
 
 resource "aws_eip_association" "attach_existing_eip_2" {
   instance_id   = aws_instance.ec2_2.id
-  allocation_id = "eipalloc-05dd6c9d7c04fb28c" # existing EIP ID
+  allocation_id = "eipalloc-05dd6c9d7c04fb28c" 
 
   depends_on = [aws_instance.ec2_2]
 }
