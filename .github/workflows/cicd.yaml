@@ -146,36 +146,85 @@ jobs:
           key: ${{ secrets.KEY }}
           script: |
 
-            cd /home/ubuntu || mkdir -p /home/ubuntu && cd /home/ubuntu
+            # cd /home/ubuntu || mkdir -p /home/ubuntu && cd /home/ubuntu
 
-            # Clone repo if it doesn't exist
+            # # Clone repo if it doesn't exist
+            # if [ ! -d "capstone_project" ]; then
+            #   git clone https://github.com/SreejaPakkiru/Capstone-Project.git capstone_project
+            # fi
+            
+            # cd capstone_project
+            
+            # # Ensure test scripts are executable
+            # chmod -R 755 ./tests
+            
+            # # Pull latest images
+            # docker-compose -f ./compose.yaml pull
+            
+            # # Give a moment for pulled images
+            # sleep 5
+            
+            # # Run test container and stop all on failure
+            # docker-compose -f ./compose.yaml up --abort-on-container-exit --build tests
+            
+            # # Capture exit code of tests
+            # TEST_EXIT_CODE=$?
+            
+            # if [ $TEST_EXIT_CODE -ne 0 ]; then
+            #   echo "Tests failed! Deployment aborted."
+            #   exit 1
+            # fi
+            
+            # # Start all services in detached mode
+            # docker-compose -f ./compose.yaml up -d --remove-orphans
+            
+            # echo "Deployment completed successfully!"
+            echo "=== 🚀 Starting Deployment ==="
+
+            cd /home/ubuntu || { mkdir -p /home/ubuntu && cd /home/ubuntu; }
+  
+            # Clone repository if missing
             if [ ! -d "capstone_project" ]; then
               git clone https://github.com/SreejaPakkiru/Capstone-Project.git capstone_project
             fi
-            
+  
             cd capstone_project
-            
-            # Ensure test scripts are executable
+  
+            # Ensure tests scripts can run
             chmod -R 755 ./tests
-            
-            # Pull latest images
-            docker-compose -f ./compose.yaml pull
-            
-            # Give a moment for pulled images
+  
+            # Export TAG_VALUE for docker-compose
+            export TAG_VALUE=${{ github.sha }}
+            echo "Using TAG_VALUE=$TAG_VALUE"
+  
+            echo "=== 📦 Pulling updated images ==="
+            docker-compose -f compose.yaml pull
+  
+            echo "=== 🔨 Building test container image ==="
+            docker-compose -f compose.yaml build tests
+  
+            echo "=== 🚀 Starting application backend containers ==="
+            docker-compose -f compose.yaml up -d \
+              redis web1 web2 nginx
+  
+            echo "Waiting 5 seconds for services to stabilize..."
             sleep 5
-            
-            # Run test container and stop all on failure
-            docker-compose -f ./compose.yaml up --abort-on-container-exit --build tests
-            
-            # Capture exit code of tests
+  
+            echo "=== 🧪 Running test container ==="
+            docker-compose -f compose.yaml up \
+              --abort-on-container-exit \
+              --build tests
+  
             TEST_EXIT_CODE=$?
-            
+  
+            echo "Test exit code: $TEST_EXIT_CODE"
+  
             if [ $TEST_EXIT_CODE -ne 0 ]; then
-              echo "Tests failed! Deployment aborted."
+              echo "❌ Tests failed! Aborting deployment."
               exit 1
             fi
-            
-            # Start all services in detached mode
-            docker-compose -f ./compose.yaml up -d --remove-orphans
-            
-            echo "Deployment completed successfully!"
+  
+            echo "=== 🚀 Tests passed successfully! Deploying stack ==="
+            docker-compose -f compose.yaml up -d --remove-orphans
+  
+            echo "=== 🎉 Deployment completed successfully! ==="
