@@ -37,9 +37,9 @@ jobs:
       #     aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || \
       #     aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
       - name: Build and Tag Docker Images
-        run: docker compose -f ./compose.yaml build
+        run:  docker compose -f compose.yaml build web1 web2 nginx
       - name: Push All Images to ECR
-        run: docker compose -f ./compose.yaml push
+        run: docker compose -f compose.yaml push web1 web2 nginx
 
   # -----------------------------
   # Test Stage (multi-stage inside containers)
