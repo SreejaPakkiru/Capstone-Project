@@ -1,7 +1,7 @@
 name: Terraform Provisioning
 
 on:
-  workflow_dispatch: # Run manually
+  workflow_dispatch: 
   push:
     branches:
       - main
@@ -39,16 +39,9 @@ jobs:
       - name: Print Terraform Outputs
         working-directory: ./terraform
         run: |
-          echo "Reading Terraform outputs..."
-
-          # EC2 Public IPs (this is a list)
+          
           echo "EC2 Public IPs:"
           terraform output ec2_public_ips
-          echo ""
-
-          # ECR repository details (this is a whole object)
-          echo "ECR Repository Output:"
+          echo "ECR Repository URL:"
           terraform output ecr_repository_urls
-          echo ""
-
-          echo "Done printing Terraform outputs!"
+          
