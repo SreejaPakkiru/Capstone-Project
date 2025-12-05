@@ -40,13 +40,14 @@ services:
    
   tests:
     build: ./tests
+    image: capstone-tests:latest   # important fix
     container_name: test-runner
     depends_on:
       - web1
       - web2
       - nginx
     volumes:
-      - ./tests:/tests   # mount latest test scripts
+      - ./tests:/tests           # always use latest scripts
     entrypoint: ["/tests/run-tests.sh"]
 
 
