@@ -1,18 +1,14 @@
 #!/bin/bash
 set -e
 
-# Integration test via Nginx + Redis
+#Integration test (Nginx + Redis)
 
-# Getting initial response from Nginx
+#Getting initial and updated response from Nginx
 initial=$(curl -s http://nginx/)
-
-# Make another request to increment counter
 curl -s http://nginx/ > /dev/null
-
-# Get updated response
 updated=$(curl -s http://nginx/)
 
-# Simple validation: check if updated response is different from initial
+#checking if updated response is different from initial
 if [ "$initial" != "$updated" ]; then
     echo "Integration test passed"
     echo "Initial response: $initial"
